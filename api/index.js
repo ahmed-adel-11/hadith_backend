@@ -4,12 +4,21 @@ const connectDB = require("../src/config/database");
 let connected = false;
 
 const handler = async (req, res) => {
-  if (!connected) {
-    await connectDB();
-    connected = true;
-  }
+  try {
+    if (!connected) {
+      await connectDB();
+      connected = true;
+    }
 
-  return serverless(app)(req, res);
+    return app(req, res);
+  } catch (error) {
+    console.error("API Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 module.exports = handler;
